@@ -5,6 +5,8 @@ import { Logo } from "@/components/ui/Logo";
 import { useAuth } from "@/hooks/useAuth";
 import { signOut } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { AddPatientModal } from "@/components/doctor/AddPatientModal";
+import { PatientList } from "@/components/doctor/PatientList";
 import {
   LogOut,
   Users,
@@ -19,6 +21,8 @@ export default function DoctorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ full_name: string | null }>({ full_name: null });
+  const [patientRefresh, setPatientRefresh] = useState(0);
+  const [patientCount, setPatientCount] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -30,26 +34,32 @@ export default function DoctorDashboard() {
         .then(({ data }) => {
           if (data) setProfile(data);
         });
+
+      // Fetch patient count
+      supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true })
+        .eq("doctor_id", user.id)
+        .then(({ count }) => {
+          setPatientCount(count || 0);
+        });
     }
-  }, [user]);
+  }, [user, patientRefresh]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
 
+  const handlePatientAdded = () => {
+    setPatientRefresh((prev) => prev + 1);
+  };
+
   const stats = [
-    { label: "Today's Patients", value: "12", icon: Users, color: "text-primary" },
+    { label: "Total Patients", value: patientCount.toString(), icon: Users, color: "text-primary" },
     { label: "Appointments", value: "8", icon: Calendar, color: "text-patient" },
     { label: "Reports Pending", value: "5", icon: FileText, color: "text-amber-500" },
     { label: "Critical Cases", value: "2", icon: Activity, color: "text-destructive" },
-  ];
-
-  const recentPatients = [
-    { name: "Sarah Johnson", time: "9:00 AM", status: "Completed" },
-    { name: "Michael Chen", time: "10:30 AM", status: "In Progress" },
-    { name: "Emily Davis", time: "11:00 AM", status: "Waiting" },
-    { name: "Robert Wilson", time: "2:00 PM", status: "Scheduled" },
   ];
 
   return (
@@ -88,13 +98,16 @@ export default function DoctorDashboard() {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2">
-            Good Morning, {profile.full_name?.split(" ")[0] || "Doctor"}!
-          </h1>
-          <p className="text-muted-foreground">
-            Here's an overview of your practice today.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 animate-fade-in">
+          <div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-2">
+              Welcome, {profile.full_name?.split(" ")[0] || "Doctor"}!
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your patients and track their health journey.
+            </p>
+          </div>
+          <AddPatientModal onPatientAdded={handlePatientAdded} />
         </div>
 
         {/* Stats Grid */}
@@ -114,68 +127,9 @@ export default function DoctorDashboard() {
           ))}
         </div>
 
-        {/* Recent Patients */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          <div className="medical-card p-6 animate-slide-up" style={{ animationDelay: "400ms" }}>
-            <h2 className="font-display text-xl font-semibold mb-4">
-              Today's Schedule
-            </h2>
-            <div className="space-y-3">
-              {recentPatients.map((patient) => (
-                <div
-                  key={patient.name}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-patient-light flex items-center justify-center">
-                      <Users size={18} className="text-patient" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{patient.name}</p>
-                      <p className="text-sm text-muted-foreground">{patient.time}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      patient.status === "Completed"
-                        ? "bg-green-100 text-green-700"
-                        : patient.status === "In Progress"
-                        ? "bg-amber-100 text-amber-700"
-                        : patient.status === "Waiting"
-                        ? "bg-primary/10 text-primary"
-                        : "bg-secondary text-secondary-foreground"
-                    }`}
-                  >
-                    {patient.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="medical-card p-6 animate-slide-up" style={{ animationDelay: "500ms" }}>
-            <h2 className="font-display text-xl font-semibold mb-4">
-              Quick Actions
-            </h2>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="h-auto py-6 flex-col gap-2">
-                <Users size={24} className="text-primary" />
-                <span>View Patients</span>
-              </Button>
-              <Button variant="outline" className="h-auto py-6 flex-col gap-2">
-                <Calendar size={24} className="text-primary" />
-                <span>Schedule</span>
-              </Button>
-              <Button variant="outline" className="h-auto py-6 flex-col gap-2">
-                <FileText size={24} className="text-primary" />
-                <span>Reports</span>
-              </Button>
-              <Button variant="outline" className="h-auto py-6 flex-col gap-2">
-                <Activity size={24} className="text-primary" />
-                <span>Analytics</span>
-              </Button>
-            </div>
-          </div>
+        {/* Patient List */}
+        <div className="animate-slide-up" style={{ animationDelay: "400ms" }}>
+          <PatientList refreshTrigger={patientRefresh} />
         </div>
       </main>
     </div>
