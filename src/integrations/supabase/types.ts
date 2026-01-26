@@ -14,12 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      patient_activities: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          service_used: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_used: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          service_used?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      patients: {
+        Row: {
+          age: number | null
+          created_at: string
+          diabetes_prediction_performed: boolean | null
+          doctor_id: string
+          gender: string | null
+          id: string
+          medical_report_analyzed: boolean | null
+          name: string
+          notes: string | null
+          patient_id: string
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          diabetes_prediction_performed?: boolean | null
+          doctor_id: string
+          gender?: string | null
+          id?: string
+          medical_report_analyzed?: boolean | null
+          name: string
+          notes?: string | null
+          patient_id?: string
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          diabetes_prediction_performed?: boolean | null
+          doctor_id?: string
+          gender?: string | null
+          id?: string
+          medical_report_analyzed?: boolean | null
+          name?: string
+          notes?: string | null
+          patient_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          patient_id: string | null
           updated_at: string
           user_id: string
         }
@@ -28,6 +92,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          patient_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -36,6 +101,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          patient_id?: string | null
           updated_at?: string
           user_id?: string
         }
