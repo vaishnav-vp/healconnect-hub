@@ -83,6 +83,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          license_number: string | null
           patient_id: string | null
           updated_at: string
           user_id: string
@@ -92,6 +93,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          license_number?: string | null
           patient_id?: string | null
           updated_at?: string
           user_id: string
@@ -101,6 +103,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          license_number?: string | null
           patient_id?: string | null
           updated_at?: string
           user_id?: string
@@ -133,6 +136,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_email_by_license: {
+        Args: { p_license_number: string }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -142,6 +149,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      license_number_exists: {
+        Args: { p_license_number: string }
         Returns: boolean
       }
     }
