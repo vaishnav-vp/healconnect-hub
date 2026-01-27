@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { signIn, signUp, type AppRole } from "@/lib/auth";
+import {
+  signIn,
+  signUp,
+  signInDoctor,
+  signUpDoctor,
+  type AppRole,
+} from "@/lib/auth";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 
@@ -17,36 +23,66 @@ export function AuthForm({ role }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const roleLabel = role === "doctor" ? "Doctor" : "Patient";
-  const roleColor = role === "doctor" ? "doctor" : "patient";
+  const isDoctor = role === "doctor";
+  const roleLabel = isDoctor ? "Doctor" : "Patient";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isLogin) {
-        await signIn(email, password);
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully signed in.",
-        });
+      if (isDoctor) {
+        // Doctor authentication uses license number
+        if (isLogin) {
+          if (!licenseNumber.trim()) {
+            throw new Error("Please enter your medical license number");
+          }
+          await signInDoctor(licenseNumber, password);
+          toast({
+            title: "Welcome back, Doctor!",
+            description: "You've successfully signed in.",
+          });
+        } else {
+          if (!licenseNumber.trim()) {
+            throw new Error("Medical license number is required");
+          }
+          if (!fullName.trim()) {
+            throw new Error("Full name is required");
+          }
+          await signUpDoctor(licenseNumber, password, fullName);
+          toast({
+            title: "Account created!",
+            description: "Welcome to MediCare+, Doctor.",
+          });
+        }
       } else {
-        await signUp(email, password, role, fullName);
-        toast({
-          title: "Account created!",
-          description: "Welcome to MediCare+.",
-        });
+        // Patient authentication uses email
+        if (isLogin) {
+          await signIn(email, password);
+          toast({
+            title: "Welcome back!",
+            description: "You've successfully signed in.",
+          });
+        } else {
+          await signUp(email, password, role, fullName);
+          toast({
+            title: "Account created!",
+            description: "Welcome to MediCare+.",
+          });
+        }
       }
       navigate(`/${role}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong. Please try again.";
       toast({
         title: "Error",
-        description: error.message || "Something went wrong. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -84,14 +120,16 @@ export function AuthForm({ role }: AuthFormProps) {
           <div className="medical-card p-8">
             <div
               className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${
-                role === "doctor"
+                isDoctor
                   ? "bg-doctor-light text-doctor"
                   : "bg-patient-light text-patient"
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${
-                role === "doctor" ? "bg-doctor" : "bg-patient"
-              }`} />
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isDoctor ? "bg-doctor" : "bg-patient"
+                }`}
+              />
               {roleLabel} Portal
             </div>
 
@@ -102,7 +140,7 @@ export function AuthForm({ role }: AuthFormProps) {
                   <Input
                     id="fullName"
                     type="text"
-                    placeholder="Dr. John Smith"
+                    placeholder={isDoctor ? "Dr. John Smith" : "John Smith"}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required={!isLogin}
@@ -111,18 +149,36 @@ export function AuthForm({ role }: AuthFormProps) {
                 </div>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-12"
-                />
-              </div>
+              {isDoctor ? (
+                <div className="space-y-2">
+                  <Label htmlFor="licenseNumber">Medical License Number</Label>
+                  <Input
+                    id="licenseNumber"
+                    type="text"
+                    placeholder="e.g., MED-12345-XX"
+                    value={licenseNumber}
+                    onChange={(e) => setLicenseNumber(e.target.value)}
+                    required
+                    className="h-12"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Enter your unique medical license number
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-12"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
