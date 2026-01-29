@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Healthcare Design System - Clean, Professional, Trustworthy */
+
+@layer base {
+  :root {
+    /* Medical teal/blue palette */
+    --background: 195 30% 98%;
+    --foreground: 200 50% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 50% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 50% 10%;
+
+    /* Primary: Medical Teal */
+    --primary: 180 55% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Soft blue-gray */
+    --secondary: 200 25% 94%;
+    --secondary-foreground: 200 50% 20%;
+
+    /* Muted: Gentle gray */
+    --muted: 200 20% 96%;
+    --muted-foreground: 200 15% 45%;
+
+    /* Accent: Lighter teal */
+    --accent: 175 45% 90%;
+    --accent-foreground: 180 55% 25%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 20% 88%;
+    --input: 200 20% 88%;
+    --ring: 180 55% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens for healthcare */
+    --gradient-medical: linear-gradient(135deg, hsl(180, 55%, 35%) 0%, hsl(195, 60%, 40%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(195, 30%, 98%) 0%, hsl(180, 25%, 95%) 100%);
+    --shadow-card: 0 4px 20px -4px hsl(200 30% 20% / 0.08);
+    --shadow-card-hover: 0 12px 32px -8px hsl(180 55% 35% / 0.15);
+    --shadow-button: 0 4px 14px -3px hsl(180 55% 35% / 0.35);
+
+    /* Role-specific colors */
+    --doctor: 180 55% 35%;
+    --doctor-light: 180 45% 92%;
+    --patient: 200 60% 45%;
+    --patient-light: 200 50% 92%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 180 55% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 180 25% 95%;
+    --sidebar-accent-foreground: 180 55% 25%;
+    --sidebar-border: 200 20% 88%;
+    --sidebar-ring: 180 55% 35%;
+  }
+
+  .dark {
+    --background: 200 40% 8%;
+    --foreground: 195 25% 95%;
+
+    --card: 200 35% 12%;
+    --card-foreground: 195 25% 95%;
+
+    --popover: 200 35% 12%;
+    --popover-foreground: 195 25% 95%;
+
+    --primary: 175 50% 45%;
+    --primary-foreground: 200 40% 8%;
+
+    --secondary: 200 30% 18%;
+    --secondary-foreground: 195 25% 90%;
+
+    --muted: 200 25% 15%;
+    --muted-foreground: 200 15% 60%;
+
+    --accent: 180 35% 20%;
+    --accent-foreground: 175 50% 55%;
+
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 25% 20%;
+    --input: 200 25% 20%;
+    --ring: 175 50% 45%;
+    
+    --shadow-card: 0 4px 20px -4px hsl(200 40% 5% / 0.4);
+    --shadow-card-hover: 0 12px 32px -8px hsl(175 50% 45% / 0.2);
+
+    --sidebar-background: 200 35% 10%;
+    --sidebar-foreground: 195 25% 90%;
+    --sidebar-primary: 175 50% 45%;
+    --sidebar-primary-foreground: 200 40% 8%;
+    --sidebar-accent: 200 30% 16%;
+    --sidebar-accent-foreground: 195 25% 90%;
+    --sidebar-border: 200 25% 20%;
+    --sidebar-ring: 175 50% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .medical-card {
+    @apply bg-card rounded-xl border border-border;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .medical-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .gradient-medical {
+    background: var(--gradient-medical);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-transition-enter {
+    animation: page-enter 0.3s ease-out forwards;
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
