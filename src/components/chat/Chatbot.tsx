@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { ChatLockedState } from "./ChatLockedState";
 import {
   MessageCircle,
   X,
@@ -12,8 +12,6 @@ import {
   Bot,
   User,
   Loader2,
-  Stethoscope,
-  UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,10 +31,8 @@ export function Chatbot() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -45,13 +41,12 @@ export function Chatbot() {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !user) return;
 
     const userMessage: Message = { role: "user", content: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
-    setShowAuthPrompt(false);
 
     try {
       const { data, error } = await supabase.functions.invoke("chatbot", {
@@ -60,22 +55,13 @@ export function Chatbot() {
             role: m.role,
             content: m.content,
           })),
-          isAuthenticated: !!user,
+          isAuthenticated: true,
         },
       });
 
       if (error) throw error;
 
-      if (data.requiresAuth) {
-        setShowAuthPrompt(true);
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: data.message,
-          },
-        ]);
-      } else if (data.message) {
+      if (data.message) {
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: data.message },
@@ -111,10 +97,7 @@ export function Chatbot() {
     }
   };
 
-  const handleLogin = (role: "doctor" | "patient") => {
-    setIsOpen(false);
-    navigate(`/login/${role}`);
-  };
+  const isAuthenticated = !!user && !authLoading;
 
   return (
     <>
@@ -148,127 +131,108 @@ export function Chatbot() {
           <div>
             <h3 className="font-semibold text-foreground">MediCare+ Assistant</h3>
             <p className="text-xs text-muted-foreground">
-              General medical information
+              {isAuthenticated ? "General medical information" : "Sign in to chat"}
             </p>
           </div>
         </div>
 
-        {/* Messages */}
-        <ScrollArea className="h-[350px] p-4" ref={scrollRef}>
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "flex gap-3",
-                  message.role === "user" ? "flex-row-reverse" : ""
-                )}
-              >
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                    message.role === "user"
-                      ? "bg-primary/10"
-                      : "bg-muted"
-                  )}
-                >
-                  {message.role === "user" ? (
-                    <User size={16} className="text-primary" />
-                  ) : (
-                    <Bot size={16} className="text-muted-foreground" />
-                  )}
-                </div>
-                <div
-                  className={cn(
-                    "max-w-[75%] px-4 py-2.5 rounded-2xl text-sm",
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-br-md"
-                      : "bg-muted text-foreground rounded-bl-md"
-                  )}
-                >
-                  {message.content}
-                </div>
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                  <Bot size={16} className="text-muted-foreground" />
-                </div>
-                <div className="bg-muted px-4 py-3 rounded-2xl rounded-bl-md">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+        {/* Content */}
+        {!isAuthenticated ? (
+          <div className="h-[350px]">
+            <ChatLockedState />
+          </div>
+        ) : (
+          <>
+            {/* Messages */}
+            <ScrollArea className="h-[350px] p-4" ref={scrollRef}>
+              <div className="space-y-4">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "flex gap-3",
+                      message.role === "user" ? "flex-row-reverse" : ""
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                        message.role === "user"
+                          ? "bg-primary/10"
+                          : "bg-muted"
+                      )}
+                    >
+                      {message.role === "user" ? (
+                        <User size={16} className="text-primary" />
+                      ) : (
+                        <Bot size={16} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <div
+                      className={cn(
+                        "max-w-[75%] px-4 py-2.5 rounded-2xl text-sm",
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground rounded-br-md"
+                          : "bg-muted text-foreground rounded-bl-md"
+                      )}
+                    >
+                      {message.content}
+                    </div>
                   </div>
-                </div>
+                ))}
+
+                {isLoading && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                      <Bot size={16} className="text-muted-foreground" />
+                    </div>
+                    <div className="bg-muted px-4 py-3 rounded-2xl rounded-bl-md">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </ScrollArea>
 
-            {showAuthPrompt && (
-              <div className="flex flex-col gap-2 p-3 bg-muted/50 rounded-xl border border-border">
-                <p className="text-sm text-muted-foreground text-center mb-2">
-                  Sign in to access personalized features:
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex-1 gap-2"
-                    onClick={() => handleLogin("patient")}
-                  >
-                    <UserCircle size={16} />
-                    Patient Login
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex-1 gap-2"
-                    onClick={() => handleLogin("doctor")}
-                  >
-                    <Stethoscope size={16} />
-                    Doctor Login
-                  </Button>
-                </div>
+            {/* Disclaimer */}
+            <div className="px-4 py-2 bg-muted/50 border-y border-border">
+              <p className="text-[10px] text-muted-foreground text-center">
+                ⚠️ This chatbot provides general medical information and is not a
+                substitute for professional medical advice.
+              </p>
+            </div>
+
+            {/* Input */}
+            <div className="p-4">
+              <div className="flex gap-2">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type your message..."
+                  className="flex-1"
+                  disabled={isLoading}
+                />
+                <Button
+                  onClick={sendMessage}
+                  disabled={!input.trim() || isLoading}
+                  size="icon"
+                  className="shrink-0"
+                >
+                  {isLoading ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <Send size={18} />
+                  )}
+                </Button>
               </div>
-            )}
-          </div>
-        </ScrollArea>
-
-        {/* Disclaimer */}
-        <div className="px-4 py-2 bg-muted/50 border-y border-border">
-          <p className="text-[10px] text-muted-foreground text-center">
-            ⚠️ This chatbot provides general medical information and is not a
-            substitute for professional medical advice.
-          </p>
-        </div>
-
-        {/* Input */}
-        <div className="p-4">
-          <div className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your message..."
-              className="flex-1"
-              disabled={isLoading}
-            />
-            <Button
-              onClick={sendMessage}
-              disabled={!input.trim() || isLoading}
-              size="icon"
-              className="shrink-0"
-            >
-              {isLoading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <Send size={18} />
-              )}
-            </Button>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

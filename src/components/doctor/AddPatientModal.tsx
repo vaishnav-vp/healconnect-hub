@@ -69,6 +69,14 @@ export function AddPatientModal({ onPatientAdded }: AddPatientModalProps) {
 
       if (error) throw error;
 
+      // Create notification for patient added
+      await supabase.from("notifications").insert({
+        user_id: user.id,
+        title: "Patient Added",
+        message: `Patient "${formData.name.trim()}" has been added successfully.`,
+        type: "success",
+      });
+
       toast({
         title: "Success",
         description: "Patient added successfully",
