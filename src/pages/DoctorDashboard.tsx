@@ -7,6 +7,7 @@ import { signOut } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AddPatientModal } from "@/components/doctor/AddPatientModal";
 import { PatientList } from "@/components/doctor/PatientList";
+import { NotificationsDropdown } from "@/components/notifications/NotificationsDropdown";
 import {
   LogOut,
   Users,
@@ -14,7 +15,6 @@ import {
   FileText,
   Activity,
   Stethoscope,
-  Bell,
 } from "lucide-react";
 
 export default function DoctorDashboard() {
@@ -69,10 +69,7 @@ export default function DoctorDashboard() {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <Logo size="sm" />
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-            </Button>
+            <NotificationsDropdown />
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-doctor-light flex items-center justify-center">
                 <Stethoscope size={20} className="text-doctor" />

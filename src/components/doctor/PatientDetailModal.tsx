@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import {
   FileText,
@@ -41,6 +42,7 @@ export function PatientDetailModal({
   onOpenChange,
   onPatientUpdated,
 }: PatientDetailModalProps) {
+  const { user } = useAuth();
   const [checkNotes, setCheckNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -83,6 +85,16 @@ export function PatientDetailModal({
 
       if (error) throw error;
 
+      // Create notification
+      if (user) {
+        await supabase.from("notifications").insert({
+          user_id: user.id,
+          title: service === "medical_report" ? "Report Analyzed" : "Diabetes Check Logged",
+          message: `${service === "medical_report" ? "Medical report" : "Diabetes prediction"} check completed for ${patient.name}.`,
+          type: "success",
+        });
+      }
+
       toast.success(
         `${service === "medical_report" ? "Report analysis" : "Diabetes check"} logged successfully`
       );
@@ -100,17 +112,17 @@ export function PatientDetailModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-patient-light flex items-center justify-center">
               <User size={20} className="text-patient" />
             </div>
             <div>
-              <span className="block">{patient.name}</span>
-              <span className="text-sm font-mono text-muted-foreground font-normal">
+              <DialogTitle>{patient.name}</DialogTitle>
+              <DialogDescription className="text-sm font-mono">
                 {patient.patient_id}
-              </span>
+              </DialogDescription>
             </div>
-          </DialogTitle>
+          </div>
         </DialogHeader>
 
         {/* Patient Info */}
