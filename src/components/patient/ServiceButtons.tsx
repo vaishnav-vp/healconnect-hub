@@ -1,20 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { FileText, Activity, ExternalLink } from "lucide-react";
 
-interface ServiceButtonsProps {
+interface ServiceButtonsProps
+{
   onServiceUsed: (service: "medical_report_analyzer" | "diabetes_prediction") => void;
 }
 
-export function ServiceButtons({ onServiceUsed }: ServiceButtonsProps) {
-  const handleMedicalReport = () => {
+export function ServiceButtons({ onServiceUsed }: ServiceButtonsProps)
+{
+  const handleMedicalReport = () =>
+  {
     // Open external URL (placeholder - replace with actual URL)
-    window.open("https://example.com/medical-report-analyzer", "_blank");
+    window.open("https://medical-report-analyzer-for-all.streamlit.app/", "_blank");
     onServiceUsed("medical_report_analyzer");
   };
 
-  const handleDiabetesPrediction = () => {
+  const handleDiabetesPrediction = () =>
+  {
     // Open external URL (placeholder - replace with actual URL)
-    window.open("https://example.com/diabetes-prediction", "_blank");
+    window.open("https://check-your-diabetes-here.streamlit.app/", "_blank");
     onServiceUsed("diabetes_prediction");
   };
 
